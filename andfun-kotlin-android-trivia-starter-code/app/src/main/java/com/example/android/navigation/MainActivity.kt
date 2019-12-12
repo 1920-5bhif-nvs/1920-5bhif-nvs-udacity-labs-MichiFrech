@@ -16,9 +16,15 @@
 
 package com.example.android.navigation
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import android.os.Bundle
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.example.android.navigation.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

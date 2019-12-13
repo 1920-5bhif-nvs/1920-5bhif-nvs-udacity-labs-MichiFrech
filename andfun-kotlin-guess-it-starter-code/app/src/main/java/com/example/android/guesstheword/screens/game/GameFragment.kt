@@ -27,7 +27,6 @@ import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.GameFragmentBinding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import android.text.format.DateUtils
 
 /**
  * Fragment where the game is played
@@ -53,11 +52,6 @@ class GameFragment : Fragment() {
         binding.gameViewModel = viewModel
 
         binding.setLifecycleOwner(this)
-
-        viewModel.currentTime.observe(this, Observer { newTime ->
-            binding.timerText.text = DateUtils.formatElapsedTime(newTime)
-
-        })
 
         viewModel.eventGameFinish.observe(this, Observer { isFinished ->
             if (isFinished) {

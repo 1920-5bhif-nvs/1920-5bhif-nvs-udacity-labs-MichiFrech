@@ -16,8 +16,10 @@
 
 package com.example.android.trackmysleepquality.sleeptracker
 
+
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
@@ -25,9 +27,6 @@ import com.example.android.trackmysleepquality.database.SleepNight
 import com.example.android.trackmysleepquality.formatNights
 import kotlinx.coroutines.*
 
-/**
- * ViewModel for SleepTrackerFragment.
- */
 class SleepTrackerViewModel(
         val database: SleepDatabaseDao,
         application: Application) : AndroidViewModel(application) {
@@ -42,6 +41,15 @@ class SleepTrackerViewModel(
 
     val nightsString = Transformations.map(nights) { nights ->
         formatNights(nights, application.resources)
+    }
+
+    private val _navigateToSleepQuality = MutableLiveData<SleepNight>()
+
+    val navigateToSleepQuality: LiveData<SleepNight>
+        get() = _navigateToSleepQuality
+
+    fun doneNavigating() {
+        _navigateToSleepQuality.value = null
     }
 
     init {
@@ -82,9 +90,6 @@ class SleepTrackerViewModel(
         }
     }
 
-    /**
-     * Executes when the START button is clicked.
-     */
     fun onStartTracking() {
         uiScope.launch {
             // Create a new night, which captures the current time,
@@ -97,27 +102,18 @@ class SleepTrackerViewModel(
         }
     }
 
-    /**
-     * Executes when the STOP button is clicked.
-     */
     fun onStopTracking() {
         uiScope.launch {
-            // In Kotlin, the return@label syntax is used for specifying which function among
-            // several nested ones this statement returns from.
-            // In this case, we are specifying to return from launch(),
-            // not the lambda.
             val oldNight = tonight.value ?: return@launch
 
-            // Update the night in the database to add the end time.
             oldNight.endTimeMilli = System.currentTimeMillis()
 
             update(oldNight)
+
+            _navigateToSleepQuality.value = oldNight
         }
     }
 
-    /**
-     * Executes when the CLEAR button is clicked.
-     */
     fun onClear() {
         uiScope.launch {
             // Clear the database table.
@@ -128,15 +124,8 @@ class SleepTrackerViewModel(
         }
     }
 
-    /**
-     * Called when the ViewModel is dismantled.
-     * At this point, we want to cancel all coroutines;
-     * otherwise we end up with processes that have nowhere to return to
-     * using memory and resources.
-     */
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
     }
 }
-

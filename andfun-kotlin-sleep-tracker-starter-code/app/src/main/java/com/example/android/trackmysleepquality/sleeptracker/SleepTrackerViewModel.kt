@@ -45,8 +45,29 @@ class SleepTrackerViewModel(
 
     private val _navigateToSleepQuality = MutableLiveData<SleepNight>()
 
+    fun doneShowingSnackbar() {
+        _showSnackbarEvent.value = false
+    }
+
     val navigateToSleepQuality: LiveData<SleepNight>
         get() = _navigateToSleepQuality
+
+    val startButtonVisible = Transformations.map(tonight) {
+        null == it
+    }
+
+    val stopButtonVisible = Transformations.map(tonight) {
+        null != it
+    }
+
+    val clearButtonVisible = Transformations.map(nights) {
+        it?.isNotEmpty()
+    }
+
+    private var _showSnackbarEvent = MutableLiveData<Boolean>()
+
+    val showSnackBarEvent: LiveData<Boolean>
+        get() = _showSnackbarEvent
 
     fun doneNavigating() {
         _navigateToSleepQuality.value = null
@@ -122,6 +143,8 @@ class SleepTrackerViewModel(
             // And clear tonight since it's no longer in the database
             tonight.value = null
         }
+
+        _showSnackbarEvent.value = true
     }
 
     override fun onCleared() {
